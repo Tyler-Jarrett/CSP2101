@@ -6,24 +6,22 @@
 BLUE='\033[94m'
 NC='\033[0m'
 
+# Declare an array to store each unique brand name
+declare -a brand_list
+
 # Check to see if 3 arguments have been provided, give an error if they haven't
 if [[ ! $# -eq 3 ]]; then
     echo "You do not have the correct number of arguments, your arguments should be RAM amount, storage amount, and the csv file"
     exit 1
 
 # Check to see that the file provided exists, is a normal file, and ends in csv, otherwise give an error
-elif [[ ! -e $3 ]] || [[ ! -f $3 ]] || [[ ! $3 =~ csv$ ]]; then
+elif [[ ! -f $3 ]] || [[ ! $3 =~ csv$ ]]; then
     echo "That is not a valid file, please ensure that you have typed the name correctly and it is a csv"
     exit 1
 
-# Check that the RAM value is only consisting of numeric values, otherwise give an error
-elif [[ ! $1 =~ ^[0-9]+$ ]]; then
-    echo "The RAM value is incorrect, please make sure that it only includes numeric values"
-    exit 1
-
-# Check that the storage value is only consisting of numeric values, otherwise give an error
-elif [[ ! $2 =~ ^[0-9]+$ ]]; then
-    echo "The storage value is incorrect, please make sure that it only includes numeric values"
+# Check that the RAM and storage values only consist of numeric values, otherwise give an error
+elif [[ ! $1 =~ ^[0-9]+$ ]] || [[ ! $2 =~ ^[0-9]+$ ]]; then
+    echo "Either the RAM or storage value is incorrect, please make sure that they only includes numeric values"
     exit 1
 
 fi
@@ -37,9 +35,6 @@ result_count=$(cat results.txt | wc -l)
 # Print out how many total devices were found
 echo "$result_count devices were found with $1GB RAM and $2GB Storage from:"
 
-
-# Declare an array to store each unique brand name
-declare -a brand_list
 
 # Loop over every unique brand and add them to the array
 while read -r brand || [ -n "$brand" ]; do
