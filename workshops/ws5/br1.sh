@@ -11,7 +11,7 @@ while true; do
 done
 
 while read -r line || [ -n "$line" ]; do
-    echo $line | sed 's/\(.*\)\/\(.*\)\/\(.*\):\(.*\):\(.*\):\(.*\)/\1-\2-\3 \4h \5m \6/'
+    echo $line | sed 's/\(.*\)\/\(.*\)\/\(.*\):\(.*\):\(.*\):\(.*\)/\1-\2-\3 \4h \5m \6s/'
     
 done < $filename
 
