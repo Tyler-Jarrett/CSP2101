@@ -1,0 +1,8 @@
+Model
+singular
+instantiated
+model
+represents
+single
+data
+record

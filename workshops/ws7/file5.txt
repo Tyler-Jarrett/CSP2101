@@ -1,0 +1,11 @@
+web
+applications
+retrieve
+data
+backend
+database
+However
+different
+types
+database
+paradigms 

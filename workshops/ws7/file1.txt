@@ -1,0 +1,7 @@
+Ubuntu
+CentOS
+Mint
+Fedora
+Parrot
+Debian
+RedHat

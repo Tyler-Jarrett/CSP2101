@@ -1,0 +1,9 @@
+printer
+scanner
+usbhub
+mouse
+monitor
+switch
+router
+camera
+microphone

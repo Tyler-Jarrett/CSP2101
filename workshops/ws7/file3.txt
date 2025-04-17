@@ -1,0 +1,7 @@
+Ubuntu
+Visual Studio Code
+Ruby 3.0.2
+Rails 6.1.6.1
+SQLite3 3.37.2
+Bootstrap
+NodeJS
