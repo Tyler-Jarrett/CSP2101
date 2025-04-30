@@ -4,7 +4,7 @@
 
 # Validation checks that enough arguments have been provided, the source file exists, and both the source and destination files are .csv
 # I considered doing a check to make sure that the destination did not exist, but concluded that it's the user's choice whether or not to overwrite a file
-if [[ ! $# -eq 2 ]] || [[ ! -f $source_file ]] || [[ ! $source_file =~ .csv$ ]] || [[ ! $destination_file =~ .csv$ ]]; then
+if [[ ! $# -eq 2 ]] || [[ ! -f $1 ]] || [[ ! $1 =~ .csv$ ]] || [[ ! $2 =~ .csv$ ]]; then
     # Print error message to provide meaningful feedback to user
     echo "One or more arguments are either missing or invalid, this command should be run with the source csv file and destination csv file"
     # Exit with an error code
