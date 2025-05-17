@@ -75,6 +75,7 @@ if $basic_mode; then
         read -p "Please provide the nameof the source web log and results output file: " source_file destination_file
 
         if [[ -f $source_file ]] && [[ $source_file =~ .csv$ ]] && [[ $destination_file =~ .csv$ ]]; then
+        
             break        
         fi
 
@@ -95,6 +96,8 @@ else
     destination_file="$(date '+%Y_%m_%d_%H_%M_%S')_fltargs_$(echo $search_string | sed s'/,/_/').csv"
 
 fi
+
+
 
 # Print the processing statement
 echo "Processing..."
