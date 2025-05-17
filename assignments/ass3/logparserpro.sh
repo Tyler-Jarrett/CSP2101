@@ -37,33 +37,35 @@ basic_mode=true
 zip_mode=false
 single_mode=false
 double_mode=false
+search_string="_"
 
 while getopts "s:d:z" opt; do
     case $opt in
         s) 
             single_mode=true 
             basic_mode=false
+            search_string=$OPTARG
             ;;
         d) 
             double_mode=true
             basic_mode=false
+            search_string=$OPTARG
             ;;
         z) 
             zip_mode=true
             ;;
         *) 
-            echo -e "$OPTERR" && exit 1
+            echo -e "$OPTERR"
+            exit 1
             ;;
     esac
 done
 
-if [[ $single_mode ]] && [[ $double_mode ]]; then
-    echo "-s and -d flags can't be used together. Exitting..."
+if [[ $single_mode = true ]] && [[ $double_mode = true ]]; then
+    echo "-s and -d flags can't be used together. Exiting..."
     exit 1
-fi
-
-if [[ $zip_mode ]] && [[ $basic_mode ]]; then
-    echo "Search option -s or -d must be used in this context. Exitting..."
+elif [[ $zip_mode = true ]] && [[ $basic_mode = true ]]; then
+    echo "Search option -s or -d must be used in this context. Exiting..."
     exit 1
 fi
 
@@ -78,6 +80,20 @@ if $basic_mode; then
 
         echo "One or more of the file names is invalid, both file names should be a csv, and the source file must exist"
     done
+else
+    while true; do 
+
+        read -p "Please provide the name of the source web log file: " source_file
+    
+        if [[ -f $source_file ]] && [[ $source_file =~ .csv$ ]]; then 
+            break
+        fi
+
+        echo "The source file must already exist and be a csv, try again"
+    done
+
+    destination_file="$(date '+%Y_%m_%d_%H_%M_%S')_fltargs_$(echo $search_string | sed s'/,/_/').csv"
+
 fi
 
 # Print the processing statement
