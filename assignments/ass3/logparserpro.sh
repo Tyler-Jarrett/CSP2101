@@ -23,7 +23,7 @@ formatRecords()
             FS=","; 
             print "IP,Date,Method,URL,Protocol,Status";
             }
-        NR>1 {
+        NR>0 {
             $4 = substr($4, 2);
             sub(/?.*$/, "", $4);
             printf "%s,%s,%s,%s,%s,%s\n", $1,$2,$3,$4,$5,$6;        
@@ -37,7 +37,7 @@ basic_mode=true
 zip_mode=false
 single_mode=false
 double_mode=false
-search_string="_"
+search_string=""
 
 while getopts "s:d:z" opt; do
     case $opt in
@@ -49,15 +49,12 @@ while getopts "s:d:z" opt; do
         d) 
             double_mode=true
             basic_mode=false
-            search_string=$OPTARG
-            ;;
+            search_string=$OPTARG;;
         z) 
-            zip_mode=true
-            ;;
+            zip_mode=true;;        
         *) 
             echo -e "$OPTERR"
-            exit 1
-            ;;
+            exit 1;;
     esac
 done
 
@@ -67,19 +64,27 @@ if [[ $single_mode = true ]] && [[ $double_mode = true ]]; then
 elif [[ $zip_mode = true ]] && [[ $basic_mode = true ]]; then
     echo "Search option -s or -d must be used in this context. Exiting..."
     exit 1
+elif [ $# -ge $OPTIND ]; then
+    echo "Invalid flag selection. Exiting..."
+    exit 1
+elif [[ $basic_mode = false ]] && [[ ! $search_string =~ .+,.+ ]]; then
+    echo "-d requires two arguments separated by a comma, e.g. arg1,arg2. Exiting..."
+    exit 1
 fi
 
 if $basic_mode; then
     while true; do
 
-        read -p "Please provide the nameof the source web log and results output file: " source_file destination_file
+        read -p "Please provide the name of the source web log and results output file: " source_file destination_file
 
         if [[ -f $source_file ]] && [[ $source_file =~ .csv$ ]] && [[ $destination_file =~ .csv$ ]]; then
-        
+
             break        
         fi
 
-        echo "One or more of the file names is invalid, both file names should be a csv, and the source file must exist"
+        echo "You need to provide the name of an existing web log .csv file, e.g."
+        echo -e "\t weblogname.csv"
+        echo "Please try again."
     done
 else
     while true; do 
@@ -90,29 +95,54 @@ else
             break
         fi
 
-        echo "The source file must already exist and be a csv, try again"
+        echo "You need to provide the name of an existing web log .csv file, e.g."
+        echo -e "\t weblogname.csv"
+        echo "Please try again."
     done
 
     destination_file="$(date '+%Y_%m_%d_%H_%M_%S')_fltargs_$(echo $search_string | sed s'/,/_/').csv"
 
 fi
 
-
-
 # Print the processing statement
 echo "Processing..."
 
-formatRecords $source_file $destination_file
+if $basic_mode; then
+    tail -n +2 $source_file > filtered_file.csv
 
-if $zip_mode; then
-    zip_destination="$(basename $destination_file ".csv").zip"
-    zip $zip_destination $destination_file 
+    formatRecords filtered_file.csv $destination_file
+
+    rm filtered_file.csv
+
+elif $single_mode; then
+    grep -i "$search_string" "$source_file" > filtered_file.csv
+
+    formatRecords filtered_file.csv $destination_file
+
+    rm filtered_file.csv
+
+elif $double_mode; then
+    first_term=$(echo "$search_string" | cut -d , -f 1)
+    second_term=$(echo "$search_string" | cut -d , -f 2)    
+
+    grep -i "$first_term" "$source_file" > first_filter.csv
+    grep -i "$second_term" first_filter.csv > second_filter.csv
+
+    formatRecords second_filter.csv $destination_file
+
+    rm first_filter.csv
+    rm second_filter.csv
 fi
 
 # Get the total number of lines, excluding the heading
 count=$(tail -n +2 $destination_file | wc -l)
 # Print to the console the number of lines that were processed
-echo "$count records processed..."
+echo "$count records processed and the results written to $destination_file as requested"
+
+if [[ $zip_mode = true ]] && [[ $count -gt 0 ]]; then
+    zip_destination="$(basename $destination_file ".csv").zip"
+    zip -q $zip_destination $destination_file 
+fi
 
 exit 0
 
