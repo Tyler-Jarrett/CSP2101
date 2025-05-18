@@ -67,7 +67,7 @@ elif [[ $zip_mode = true ]] && [[ $basic_mode = true ]]; then
 elif [ $# -ge $OPTIND ]; then
     echo "Invalid flag selection. Exiting..."
     exit 1
-elif [[ $basic_mode = false ]] && [[ ! $search_string =~ .+,.+ ]]; then
+elif [[ $double_mode = true ]] && [[ ! $search_string =~ .+,.+ ]]; then
     echo "-d requires two arguments separated by a comma, e.g. arg1,arg2. Exiting..."
     exit 1
 fi
@@ -136,12 +136,18 @@ fi
 
 # Get the total number of lines, excluding the heading
 count=$(tail -n +2 $destination_file | wc -l)
-# Print to the console the number of lines that were processed
-echo "$count records processed and the results written to $destination_file as requested"
+if [ $count -eq 0 ]; then
+    rm $destination_file
+    echo "No matching records were found"
+else
+    # Print to the console the number of lines that were processed
+    echo "$count records processed and the results written to $destination_file as requested"
+fi
 
 if [[ $zip_mode = true ]] && [[ $count -gt 0 ]]; then
     zip_destination="$(basename $destination_file ".csv").zip"
     zip -q $zip_destination $destination_file 
+    echo "The results file has been zipped into $zip_destination as requested"
 fi
 
 exit 0
