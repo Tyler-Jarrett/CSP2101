@@ -54,7 +54,7 @@ elif [[ $double_mode = true ]] && [[ ! $search_string =~ .+,.+ ]]; then
     echo "-d requires two arguments separated by a comma, e.g. arg1,arg2. Exiting..."
     exit 1
 # Finally I check for attempts to do a double search term in single mode, and check for the getopts quirk if the user passes -sz together
-elif [[ $1 = '-sz' ]] || [[ $search_string =~ , ]]; then
+elif [[ $1 = '-sz' ]] || [[ $search_string =~ , ]] && [[ $single_mode = true ]]; then
     echo "-s must have a valid argument which is a single search term and can't group -sz. Exiting..."
     exit 1
 fi
