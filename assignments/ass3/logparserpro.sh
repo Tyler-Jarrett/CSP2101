@@ -28,7 +28,7 @@ while getopts "s:d:z" opt; do
         z) 
             zip_mode=true;;        
         *) 
-            echo -e "$OPTERR"
+            echo "Invalid flag selection. Exiting..."
             exit 1;;
     esac
 done
@@ -48,10 +48,14 @@ elif [[ $zip_mode = true ]] && [[ $basic_mode = true ]]; then
 elif [ $# -ge $OPTIND ]; then
     echo "Invalid flag selection. Exiting..."
     exit 1
-# Finally if double mode is active, I check that the argument has a comma and at least one character either side of it
+# If double mode is active, I check that the argument has a comma and at least one character either side of it
 # This doesn't prevent bad search terms but it does stop empty search terms
 elif [[ $double_mode = true ]] && [[ ! $search_string =~ .+,.+ ]]; then
     echo "-d requires two arguments separated by a comma, e.g. arg1,arg2. Exiting..."
+    exit 1
+# Finally I check for attempts to do a double search term in single mode, and check for the getopts quirk if the user passes -sz together
+elif [[ $1 = '-sz' ]] || [[ $search_string =~ , ]]; then
+    echo "-s must have a valid argument which is a single search term and can't group -sz. Exiting..."
     exit 1
 fi
 
